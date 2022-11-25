@@ -35,6 +35,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run(){
     try{
         const usersCollection = client.db('bookshop').collection('users');
+        const booksCollection = client.db('bookshop').collection('books');
 
         // storing user info to db when a user signup 
         app.post('/users', async (req, res) =>{
@@ -66,6 +67,14 @@ async function run(){
 
             return res.status(403).send({accessToken: 'forbidden'});
         });
+
+        // storing book by seller which added
+        app.post('/books', async(req, res)=>{
+            const book = req.body;
+            const result = await booksCollection.insertOne(book);
+
+            res.send(result);
+        })
     }
     finally{}
 }
