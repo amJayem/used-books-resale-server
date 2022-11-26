@@ -92,6 +92,20 @@ async function run(){
             const result = await booksCollection.deleteOne(query);
 
             res.send(result);
+        });
+
+        // seller can update their product status
+        app.patch('/book/status/:id', async(req,res)=>{
+            const id = req.params.id;
+            const status = req.body;
+            const filter = { _id: ObjectId(id)}
+            const options = { upsert: true}
+            const updatedDoc={
+                $set:  status
+            }
+            const result = await booksCollection.updateOne(filter , updatedDoc);
+
+            res.send(result);
         })
     }
     finally{}
