@@ -36,6 +36,7 @@ async function run(){
     try{
         const usersCollection = client.db('bookshop').collection('users');
         const booksCollection = client.db('bookshop').collection('books');
+        const advertiseCollection = client.db('bookshop').collection('advertise');
 
         // storing user info to db when a user signup 
         app.post('/users', async (req, res) =>{
@@ -101,12 +102,40 @@ async function run(){
             const filter = { _id: ObjectId(id)}
             const options = { upsert: true}
             const updatedDoc={
-                $set:  status
+                $set:  status,
             }
             const result = await booksCollection.updateOne(filter , updatedDoc);
 
             res.send(result);
-        })
+        });
+
+        // seller can add their product for advertising
+        app.patch('/book/feature/:id', async(req,res)=>{
+            const id = req.params.id;
+            // const advertise = req.body;
+            const filter = { _id: ObjectId(id)}
+            const options = { upsert: true}
+            const updatedDoc={
+                $set:  {advertise: true},
+            }
+            const result = await booksCollection.updateOne(filter , updatedDoc);
+
+            res.send(result);
+        });
+
+        // seller can remove their product for advertising
+        app.patch('/book/feature/remove/:id', async(req,res)=>{
+            const id = req.params.id;
+            // const advertise = req.body;
+            const filter = { _id: ObjectId(id)}
+            const options = { upsert: true}
+            const updatedDoc={
+                $set:  {advertise: false},
+            }
+            const result = await booksCollection.updateOne(filter , updatedDoc);
+
+            res.send(result);
+        });
     }
     finally{}
 }
