@@ -37,6 +37,7 @@ async function run(){
         const usersCollection = client.db('bookshop').collection('users');
         const booksCollection = client.db('bookshop').collection('books');
         const advertiseCollection = client.db('bookshop').collection('advertise');
+        const categoriesCollection = client.db('bookshop').collection('categories');
 
         // storing user info to db when a user signup 
         app.post('/users', async (req, res) =>{
@@ -143,6 +144,33 @@ async function run(){
             const result = await booksCollection.find({advertise: true, status: 'available'}).toArray();
             res.send(result);
         });
+
+        // getting categories
+        app.get('/categories', async(req, res)=>{
+            const result = await categoriesCollection.find({}).toArray();
+
+            res.send(result);
+        })
+
+        // getting category by id
+        app.get('/category/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query = { categoryId: id};
+            const result = await categoriesCollection.findOne(query);
+
+            res.send(result);
+        });
+
+        // getting books by category id
+        app.get('/books/categoryId', async (req, res) => {
+            const id = req.query.id;
+            const query = { categoryId: id};
+            const result = await booksCollection.find(query).toArray();
+
+            res.send(result);
+        })
+        
+        
     }
     finally{}
 }
