@@ -69,7 +69,7 @@ async function run(){
             return res.status(403).send({accessToken: 'forbidden'});
         });
 
-        // storing book by seller which added
+        // storing books by seller 
         app.post('/books', async(req, res)=>{
             const book = req.body;
             const result = await booksCollection.insertOne(book);
@@ -134,6 +134,13 @@ async function run(){
             }
             const result = await booksCollection.updateOne(filter , updatedDoc);
 
+            res.send(result);
+        });
+
+        // getting all books and will be filtering for advertisement show
+        app.get('/feature/books', async(req, res)=>{
+            
+            const result = await booksCollection.find({advertise: true, status: 'available'}).toArray();
             res.send(result);
         });
     }
