@@ -38,6 +38,7 @@ async function run(){
         const booksCollection = client.db('bookshop').collection('books');
         const advertiseCollection = client.db('bookshop').collection('advertise');
         const categoriesCollection = client.db('bookshop').collection('categories');
+        const buyerOrdersCollection = client.db('bookshop').collection('buyerOrders');
 
         // storing user info to db when a user signup 
         app.post('/users', async (req, res) =>{
@@ -178,6 +179,46 @@ async function run(){
 
             res.send(result);
         })
+
+        // tracking buyers orders
+        app.post('/buyer-orders', async (req, res) =>{
+            const book = req.body;
+            const result = await buyerOrdersCollection.insertOne(book);
+
+            res.send(result);
+        })
+
+        // getting all book orders info by each buyer
+        app.get('/buyer-orders', async(req, res)=>{
+            const email = req.query.email;
+            const query = { buyerEmail: email};
+            const result = await buyerOrdersCollection.find(query).toArray();
+
+            res.send(result);
+        });
+
+        // getting buyer order info for payment
+        app.get('/buyer-orders/:id', async(req, res)=>{
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id)};
+            const result = await buyerOrdersCollection.findOne(filter);
+
+            res.send(result);
+        });
+
+        //  buyer make payment && updated buyer order
+        app.patch('/buyer-orders/success/:id', async(req,res)=>{
+            const id = req.params.id;
+            // const advertise = req.body;
+            const filter = { _id: ObjectId(id)}
+            const options = { upsert: true}
+            const updatedDoc={
+                $set:  {payment: true},
+            }
+            const result = await buyerOrdersCollection.updateOne(filter , updatedDoc);
+
+            res.send(result);
+        });
     }
     finally{}
 }
