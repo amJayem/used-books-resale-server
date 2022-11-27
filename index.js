@@ -170,7 +170,14 @@ async function run(){
             res.send(result);
         })
         
-        
+        // fetching book info for booking a book by buyer
+        app.get('/book/:id', async(req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id)};
+            const result = await booksCollection.findOne(filter);
+
+            res.send(result);
+        })
     }
     finally{}
 }
