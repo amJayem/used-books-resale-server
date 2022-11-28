@@ -57,6 +57,20 @@ async function run(){
             res.send(result);
         });
 
+        // update status for seller as verified
+        app.patch('/seller/status/:id', async(req,res)=>{
+            const id = req.params.id;
+            const status = req.body;
+            const filter = { _id: ObjectId(id)}
+            const options = { upsert: true}
+            const updatedDoc={
+                $set:  {status: 'verified'},
+            }
+            const result = await usersCollection.updateOne(filter , updatedDoc);
+
+            res.send(result);
+        });
+
         
         // delete user by admin
         app.delete('/delete/user/:id', async(req, res) =>{
@@ -241,6 +255,15 @@ async function run(){
         // getting all sellers
         app.get('/all-sellers', async(req, res)=>{
             const result = await usersCollection.find({ role: 'seller'}).toArray();
+
+            res.send(result);
+        });
+
+        // getting all sellers
+        app.get('/seller/verified/:email', async(req, res)=>{
+            const email = req.params.email;
+            const filter = { email: email, status: 'verified' }
+            const result = await usersCollection.findOne(filter);
 
             res.send(result);
         });
