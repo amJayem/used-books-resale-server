@@ -57,6 +57,17 @@ async function run(){
             res.send(result);
         });
 
+        
+        // delete user by admin
+        app.delete('/delete/user/:id', async(req, res) =>{
+            const id = req.params.id;
+            // console.log(id);
+            const filter = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(filter);
+
+            res.send(result);
+        })
+
         // verify jwt by user email
         app.get('/jwt', async(req,res) => {
             const email = req.query.email;
@@ -219,6 +230,21 @@ async function run(){
 
             res.send(result);
         });
+
+        // getting all buyer
+        app.get('/all-buyers', async(req, res)=>{
+            const result = await usersCollection.find({ role: 'buyer'}).toArray();
+
+            res.send(result);
+        });
+
+        // getting all sellers
+        app.get('/all-sellers', async(req, res)=>{
+            const result = await usersCollection.find({ role: 'seller'}).toArray();
+
+            res.send(result);
+        });
+
     }
     finally{}
 }
